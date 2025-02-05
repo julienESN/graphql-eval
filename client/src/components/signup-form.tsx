@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent} from "@/components/ui/card";
@@ -20,33 +20,128 @@ export function SignUpForm({
     const [passwordConf, setPasswordConf] = useState<string>("");
     const [name, setName] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const [passwordStrength, setPasswordStrength] = useState<{
+        hasMinLength: boolean;
+        hasUpperCase: boolean;
+        hasLowerCase: boolean;
+        hasNumber: boolean;
+        hasSpecialChar: boolean;
+    }>({
+        hasMinLength: false,
+        hasUpperCase: false,
+        hasLowerCase: false,
+        hasNumber: false,
+        hasSpecialChar: false
+    });
+    const [isPasswordFocused, setIsPasswordFocused] = useState<boolean>(false);
+
+    // Ajout des états de validation
+    const [validations, setValidations] = useState<{
+        email: {
+            isValid: boolean;
+            message: string;
+        };
+        emailFormat: {
+            isValid: boolean;
+            message: string;
+        };
+    }>({
+        email: {
+            isValid: true,
+            message: "",
+        },
+        emailFormat: {
+            isValid: true,
+            message: "",
+        },
+    });
+
+    // Fonction pour vérifier la force du mot de passe
+    const checkPasswordStrength = (password: string) => {
+        setPasswordStrength({
+            hasMinLength: password.length >= 8,
+            hasUpperCase: /[A-Z]/.test(password),
+            hasLowerCase: /[a-z]/.test(password),
+            hasNumber: /[0-9]/.test(password),
+            hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+        });
+    };
+
+    // Mise à jour de la vérification à chaque changement du mot de passe
+    useEffect(() => {
+        checkPasswordStrength(password);
+    }, [password]);
+
+    // Validation du format de l'email
+    const validateEmailFormat = (email: string) => {
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const isValid = emailRegex.test(email);
+        setValidations(prev => ({
+            ...prev,
+            emailFormat: {
+                isValid,
+                message: isValid ? "" : "Format d'email invalide"
+            }
+        }));
+        return isValid;
+    };
+
+    // Gestionnaires d'événements pour les champs
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newEmail = e.target.value;
+        setEmail(newEmail);
+        validateEmailFormat(newEmail);
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        setError(null); // Réinitialiser les erreurs
+        setError(null);
 
-        // Vérifier les champs de confirmation
+        // Vérifier que toutes les conditions du mot de passe sont remplies
+        const isPasswordValid = Object.values(passwordStrength).every(value => value);
+        if (!isPasswordValid) {
+            setError("Le mot de passe ne respecte pas les critères de sécurité.");
+            return;
+        }
+
+        // Vérifier la correspondance des emails
         if (email !== emailConf) {
             setError("Les emails ne correspondent pas.");
             return;
         }
 
+        // Vérifier la correspondance des mots de passe
         if (password !== passwordConf) {
             setError("Les mots de passe ne correspondent pas.");
             return;
         }
 
         try {
-            await register(email, password, name); // Appel de la fonction register
-            router("/"); // Redirection vers la page d'accueil après inscription
+            await register(email, password, name);
+            router("/");
         } catch (err) {
-            // Vérification stricte du type de l'erreur
             if (err instanceof Error) {
-                setError(err.message); // Récupération du message d'erreur
+                setError(err.message);
             } else {
                 setError("Une erreur inconnue s'est produite.");
             }
         }
+    };
+
+    // Fonction pour vérifier si le formulaire est valide
+    const isFormValid = (): boolean => {
+        const isPasswordValid = Object.values(passwordStrength).every(value => value);
+        return (
+            name.trim() !== "" &&
+            email !== "" &&
+            emailConf !== "" &&
+            password !== "" &&
+            passwordConf !== "" &&
+            email === emailConf &&
+            password === passwordConf &&
+            isPasswordValid &&
+            validations.emailFormat.isValid
+        );
     };
 
     return (
@@ -74,7 +169,7 @@ export function SignUpForm({
                                     placeholder="Votre nom"
                                     required
                                     value={name}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                                    onChange={(e) => setName(e.target.value)}
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -85,8 +180,12 @@ export function SignUpForm({
                                     placeholder="m@example.com"
                                     required
                                     value={email}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                                    onChange={handleEmailChange}
+                                    className={!validations.emailFormat.isValid ? "border-red-500" : ""}
                                 />
+                                {!validations.emailFormat.isValid && (
+                                    <p className="text-red-500 text-sm">{validations.emailFormat.message}</p>
+                                )}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="emailConf">Confirmation de l'email</Label>
@@ -96,8 +195,12 @@ export function SignUpForm({
                                     placeholder="m@example.com"
                                     required
                                     value={emailConf}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailConf(e.target.value)}
+                                    onChange={(e) => setEmailConf(e.target.value)}
+                                    className={email !== emailConf && emailConf ? "border-red-500" : ""}
                                 />
+                                {email !== emailConf && emailConf && (
+                                    <p className="text-red-500 text-sm">Les emails ne correspondent pas</p>
+                                )}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Mot de passe</Label>
@@ -107,7 +210,31 @@ export function SignUpForm({
                                     required
                                     value={password}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                                    onFocus={() => setIsPasswordFocused(true)}
+                                    onBlur={() => setIsPasswordFocused(false)}
                                 />
+                                {(isPasswordFocused || password) && (
+                                    <div className="text-sm space-y-1 mt-2">
+                                        <p className="font-semibold text-muted-foreground">Le mot de passe doit contenir :</p>
+                                        <ul className="space-y-1">
+                                            <li className={`flex items-center gap-2 ${passwordStrength.hasMinLength ? 'text-green-500' : 'text-red-500'}`}>
+                                                {passwordStrength.hasMinLength ? '✓' : '×'} Au moins 8 caractères
+                                            </li>
+                                            <li className={`flex items-center gap-2 ${passwordStrength.hasUpperCase ? 'text-green-500' : 'text-red-500'}`}>
+                                                {passwordStrength.hasUpperCase ? '✓' : '×'} Une majuscule
+                                            </li>
+                                            <li className={`flex items-center gap-2 ${passwordStrength.hasLowerCase ? 'text-green-500' : 'text-red-500'}`}>
+                                                {passwordStrength.hasLowerCase ? '✓' : '×'} Une minuscule
+                                            </li>
+                                            <li className={`flex items-center gap-2 ${passwordStrength.hasNumber ? 'text-green-500' : 'text-red-500'}`}>
+                                                {passwordStrength.hasNumber ? '✓' : '×'} Un chiffre
+                                            </li>
+                                            <li className={`flex items-center gap-2 ${passwordStrength.hasSpecialChar ? 'text-green-500' : 'text-red-500'}`}>
+                                                {passwordStrength.hasSpecialChar ? '✓' : '×'} Un caractère spécial
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="passwordConf">Confirmation du mot de passe</Label>
@@ -117,9 +244,18 @@ export function SignUpForm({
                                     required
                                     value={passwordConf}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordConf(e.target.value)}
+                                    className={password !== passwordConf && passwordConf ? "border-red-500" : ""}
                                 />
+                                {password !== passwordConf && passwordConf && (
+                                    <p className="text-red-500 text-sm">Les mots de passe ne correspondent pas</p>
+                                )}
                             </div>
-                            <Button type="submit" className="w-full">
+                            <Button 
+                                type="submit" 
+                                className="w-full" 
+                                disabled={!isFormValid()}
+                                style={{ opacity: isFormValid() ? 1 : 0.5 }}
+                            >
                                 Créer un compte
                             </Button>
 
