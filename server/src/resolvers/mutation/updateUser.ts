@@ -1,5 +1,5 @@
 // src/resolvers/mutation/updateUser.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 
 interface UpdateUserArgs {
   email?: string;
@@ -10,7 +10,7 @@ interface UserResponse {
   code: number;
   success: boolean;
   message: string;
-  user: any; // Remplacez `any` par le type approprié si besoin
+  user: User | null;
 }
 
 export const updateUser = async (
