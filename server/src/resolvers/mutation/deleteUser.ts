@@ -1,11 +1,11 @@
 // src/resolvers/mutation/deleteUser.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 
 interface UserResponse {
   code: number;
   success: boolean;
   message: string;
-  user: any;
+  user: User | null;
 }
 
 export const deleteUser = async (
