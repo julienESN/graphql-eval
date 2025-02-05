@@ -1,4 +1,3 @@
-// src/schema.ts
 import { gql } from 'apollo-server';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
@@ -19,6 +18,10 @@ import { deleteArticle } from '../resolvers/mutation/deleteArticle';
 import { createComment } from '../resolvers/mutation/createComment';
 import { updateComment } from '../resolvers/mutation/updateComment';
 import { deleteComment } from '../resolvers/mutation/deleteComment';
+
+// Import des nouvelles mutations pour les likes
+import { likeArticle } from '../resolvers/mutation/likeArticle';
+import { unlikeArticle } from '../resolvers/mutation/unlikeArticle';
 
 const typeDefs = gql`
   scalar DateTime
@@ -54,6 +57,10 @@ const typeDefs = gql`
     createComment(articleId: Int!, content: String!): CommentResponse!
     updateComment(id: Int!, content: String!): CommentResponse!
     deleteComment(id: Int!): CommentResponse!
+
+    # Mutations pour les likes sur les articles
+    likeArticle(articleId: Int!): LikeResponse!
+    unlikeArticle(articleId: Int!): LikeResponse!
   }
 
   type SignInResponse {
@@ -91,6 +98,13 @@ const typeDefs = gql`
     comment: Comment
   }
 
+  type LikeResponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    like: Like
+  }
+
   type User {
     id: Int!
     email: String!
@@ -106,7 +120,7 @@ const typeDefs = gql`
     createdAt: DateTime!
     author: User!
     comments: [Comment!]!
-    # Vous pouvez ajouter un champ pour les likes si besoin
+    likes: [Like!]! # Nouveau champ pour afficher les likes de l'article
   }
 
   type Comment {
@@ -114,6 +128,12 @@ const typeDefs = gql`
     content: String!
     createdAt: DateTime!
     author: User!
+    article: Article!
+  }
+
+  type Like {
+    id: Int!
+    user: User!
     article: Article!
   }
 `;
@@ -141,6 +161,17 @@ const resolvers = {
     createComment,
     updateComment,
     deleteComment,
+    likeArticle,
+    unlikeArticle,
+  },
+
+  Article: {
+    likes: async (parent: any, _: unknown, { prisma }: { prisma: any }) => {
+      return prisma.like.findMany({
+        where: { articleId: parent.id },
+        include: { user: true, article: true },
+      });
+    },
   },
 };
 
