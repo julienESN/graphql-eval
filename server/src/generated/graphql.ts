@@ -24,6 +24,7 @@ export type Article = {
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
+  likes: Array<Like>;
   title: Scalars['String']['output'];
 };
 
@@ -52,6 +53,21 @@ export type CommentResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+export type Like = {
+  __typename?: 'Like';
+  article: Article;
+  id: Scalars['Int']['output'];
+  user: User;
+};
+
+export type LikeResponse = {
+  __typename?: 'LikeResponse';
+  code: Scalars['Int']['output'];
+  like?: Maybe<Like>;
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createArticle: ArticleResponse;
@@ -59,8 +75,10 @@ export type Mutation = {
   deleteArticle: ArticleResponse;
   deleteComment: CommentResponse;
   deleteUser: UserResponse;
+  likeArticle: LikeResponse;
   signIn: SignInResponse;
   signUp: SignUpResponse;
+  unlikeArticle: LikeResponse;
   updateArticle: ArticleResponse;
   updateComment: CommentResponse;
   updateUser: UserResponse;
@@ -89,6 +107,11 @@ export type MutationDeleteCommentArgs = {
 };
 
 
+export type MutationLikeArticleArgs = {
+  articleId: Scalars['Int']['input'];
+};
+
+
 export type MutationSignInArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -99,6 +122,11 @@ export type MutationSignUpArgs = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationUnlikeArticleArgs = {
+  articleId: Scalars['Int']['input'];
 };
 
 
@@ -264,6 +292,8 @@ export type ResolversTypes = {
   CommentResponse: ResolverTypeWrapper<CommentResponse>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Like: ResolverTypeWrapper<Like>;
+  LikeResponse: ResolverTypeWrapper<LikeResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   SignInResponse: ResolverTypeWrapper<SignInResponse>;
@@ -282,6 +312,8 @@ export type ResolversParentTypes = {
   CommentResponse: CommentResponse;
   DateTime: Scalars['DateTime']['output'];
   Int: Scalars['Int']['output'];
+  Like: Like;
+  LikeResponse: LikeResponse;
   Mutation: {};
   Query: {};
   SignInResponse: SignInResponse;
@@ -297,6 +329,7 @@ export type ArticleResolvers<ContextType = any, ParentType extends ResolversPare
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -330,14 +363,31 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type LikeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Like'] = ResolversParentTypes['Like']> = {
+  article?: Resolver<ResolversTypes['Article'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LikeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LikeResponse'] = ResolversParentTypes['LikeResponse']> = {
+  code?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  like?: Resolver<Maybe<ResolversTypes['Like']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createArticle?: Resolver<ResolversTypes['ArticleResponse'], ParentType, ContextType, RequireFields<MutationCreateArticleArgs, 'content' | 'title'>>;
   createComment?: Resolver<ResolversTypes['CommentResponse'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'articleId' | 'content'>>;
   deleteArticle?: Resolver<ResolversTypes['ArticleResponse'], ParentType, ContextType, RequireFields<MutationDeleteArticleArgs, 'id'>>;
   deleteComment?: Resolver<ResolversTypes['CommentResponse'], ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'id'>>;
   deleteUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType>;
+  likeArticle?: Resolver<ResolversTypes['LikeResponse'], ParentType, ContextType, RequireFields<MutationLikeArticleArgs, 'articleId'>>;
   signIn?: Resolver<ResolversTypes['SignInResponse'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'email' | 'password'>>;
   signUp?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'email' | 'name' | 'password'>>;
+  unlikeArticle?: Resolver<ResolversTypes['LikeResponse'], ParentType, ContextType, RequireFields<MutationUnlikeArticleArgs, 'articleId'>>;
   updateArticle?: Resolver<ResolversTypes['ArticleResponse'], ParentType, ContextType, RequireFields<MutationUpdateArticleArgs, 'id'>>;
   updateComment?: Resolver<ResolversTypes['CommentResponse'], ParentType, ContextType, RequireFields<MutationUpdateCommentArgs, 'content' | 'id'>>;
   updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, Partial<MutationUpdateUserArgs>>;
@@ -394,6 +444,8 @@ export type Resolvers<ContextType = any> = {
   Comment?: CommentResolvers<ContextType>;
   CommentResponse?: CommentResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  Like?: LikeResolvers<ContextType>;
+  LikeResponse?: LikeResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SignInResponse?: SignInResponseResolvers<ContextType>;
