@@ -17,9 +17,11 @@
     "clsx": "^2.1.1",
     "graphql": "^16.10.0",
     "lucide-react": "^0.474.0",
+    "radix-ui": "^1.1.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^7.1.5",
+    "shadcn": "^2.3.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -38,6 +40,6 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.11"
   }
 }

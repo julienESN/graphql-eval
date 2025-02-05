@@ -1,14 +1,14 @@
 /**
  * Layout principal de l'application
  * @file layout.tsx
- * 
+ *
  * Ce composant définit la structure principale de l'application avec une sidebar
  * contenant le logo et les liens de navigation principaux.
  */
 
-import { Outlet } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-import { Home, PlusCircle, User, HandMetal } from "lucide-react";
+import {Outlet} from "react-router";
+import {NavLink} from "react-router";
+import {Home, PlusCircle, User, HandMetal} from "lucide-react";
 
 import {
   Sidebar,
@@ -31,8 +31,8 @@ export default function Layout() {
       <div className="flex h-screen">
         <Sidebar variant="floating" collapsible="icon">
           <SidebarHeader className="flex items-center justify-between py-6 px-2">
-            <HandMetal />
-            <SidebarTrigger />
+            <HandMetal/>
+            <SidebarTrigger/>
           </SidebarHeader>
 
           <SidebarContent>
@@ -45,11 +45,11 @@ export default function Layout() {
                 >
                   <NavLink
                     to="/"
-                    className={({ isActive }) =>
+                    className={({isActive}) =>
                       isActive ? "text-primary" : ""
                     }
                   >
-                    <Home className="h-4 w-4" />
+                    <Home className="h-4 w-4"/>
                     <span>Accueil</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -63,11 +63,11 @@ export default function Layout() {
                 >
                   <NavLink
                     to="/create"
-                    className={({ isActive }) =>
+                    className={({isActive}) =>
                       isActive ? "text-primary" : ""
                     }
                   >
-                    <PlusCircle className="h-4 w-4" />
+                    <PlusCircle className="h-4 w-4"/>
                     <span>Créer</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -81,11 +81,11 @@ export default function Layout() {
                 >
                   <NavLink
                     to="/account"
-                    className={({ isActive }) =>
+                    className={({isActive}) =>
                       isActive ? "text-primary" : ""
                     }
                   >
-                    <User className="h-4 w-4" />
+                    <User className="h-4 w-4"/>
                     <span>Compte</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -96,7 +96,7 @@ export default function Layout() {
 
         {/* Contenu principal */}
         <main className="flex-1 overflow-auto">
-          <Outlet />
+          <Outlet/>
         </main>
       </div>
     </SidebarProvider>
