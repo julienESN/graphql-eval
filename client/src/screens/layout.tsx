@@ -113,7 +113,7 @@ export default function Layout() {
         </Sidebar>
 
         {/* Contenu principal */}
-        <main className="flex-1 overflow-auto relative">
+        <main className="absolute inset-0 z-0 overflow-auto">
           <Outlet/>
         </main>
       </div>
