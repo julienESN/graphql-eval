@@ -1,3 +1,4 @@
 /client/.vite
 /.idea
 client/package-lock.json
+.DS_Store
