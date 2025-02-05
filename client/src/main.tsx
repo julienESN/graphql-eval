@@ -5,6 +5,7 @@ import IndexScreen from "./screens/index";
 import LoginPage from "./screens/LoginPage"
 import Layout from "./screens/layout"
 import SignUpPage from "./screens/SignUpPage"
+import UserPage from "./screens/UserPage"
 import {BrowserRouter, Route, Routes} from "react-router";
 import {ApolloProvider} from "@apollo/client";
 import client from './apolloClient';
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
               }
             >
               <Route path="/" element={<IndexScreen/>}/>
+              <Route path="/user" element={<UserPage/>}/>
             </Route>
             <Route
               path="/login"
