@@ -28,16 +28,8 @@ interface UserData {
 
 // Liste des images de bannière disponibles
 const BANNER_IMAGES = [
-  "/food1.webp",
-  "/food2.webp",
-  "/paysage1.webp",
-  "/paysage2.webp",
-  "/paysage3.webp",
   "/psg1.webp",
-  "/riche1.webp",
-  "/riche2.webp",  
   // Ajoutez ici toutes les images .webp disponibles
-
 ];
 
 // Interface pour les données d'article (à développer plus tard)
@@ -50,11 +42,12 @@ const BANNER_IMAGES = [
 export default function UserPage() {
   // États pour gérer les données utilisateur et la modale
   const [userData, setUserData] = useState<UserData>({
-    name: "John Doe",
-    email: "john@example.com",
+    name: "João Neves",
+    email: "joaoneves@psg.com",
   });
   const [bannerImage, setBannerImage] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
 
   // Effet pour charger une image de bannière aléatoire
   useEffect(() => {
@@ -76,7 +69,7 @@ export default function UserPage() {
       <div className="relative w-full">
         {/* Bannière */}
         <div 
-          className="w-full h-48 bg-cover bg-center"
+          className="w-full h-48 bg-cover bg-center rounded-bl-lg shadow-lg"
           style={{ 
             backgroundImage: `url(${bannerImage})`,
             backgroundColor: 'rgba(0, 0, 0, 0.4)',

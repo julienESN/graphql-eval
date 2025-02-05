@@ -8,7 +8,7 @@
 
 import {Outlet} from "react-router";
 import {NavLink} from "react-router";
-import {Home, PlusCircle, User, Settings, LogOut, HandMetal} from "lucide-react";
+import {Home, PlusCircle, User, LogOut, HandMetal} from "lucide-react";
 
 import {
   Sidebar,
@@ -97,12 +97,6 @@ export default function Layout() {
                   <NavLink to="/user" className="flex items-center gap-2">
                     <User className="h-5 w-5"/>
                     <span>Mon Compte</span>
-                  </NavLink>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <NavLink to="/settings" className="flex items-center gap-2">
-                    <Settings className="h-5 w-5"/>
-                    <span>Paramètres</span>
                   </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator/>
