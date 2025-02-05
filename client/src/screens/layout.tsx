@@ -8,7 +8,7 @@
 
 import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Home, PlusCircle, User } from "lucide-react";
+import { Home, PlusCircle, User, HandMetal } from "lucide-react";
 
 import {
   Sidebar,
@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 /**
@@ -26,12 +27,12 @@ import {
  */
 export default function Layout() {
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider defaultOpen={false}>
       <div className="flex h-screen">
-        <Sidebar>
-          <SidebarHeader className="flex items-center justify-center py-6">
-            {/* Logo de l'application */}
-            <h1 className="text-xl font-bold">MonApp</h1>
+        <Sidebar variant="floating" collapsible="icon">
+          <SidebarHeader className="flex items-center justify-between py-6 px-2">
+            <HandMetal />
+            <SidebarTrigger />
           </SidebarHeader>
 
           <SidebarContent>
