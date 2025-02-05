@@ -12,6 +12,10 @@ const CREATE_ARTICLE_MUTATION = gql`
                 id
                 title
                 content
+                author {
+                    id
+                    email
+                }
             }
         }
     }
@@ -25,12 +29,12 @@ interface ArticleContextType {
 const ArticleContext = createContext<ArticleContextType | undefined>(undefined);
 
 export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [createArticleMutation] = useMutation(CREATE_ARTICLE_MUTATION);
+    const [createArticle] = useMutation(CREATE_ARTICLE_MUTATION);
 
     // Fonction pour créer un article
-    const createArticle = async (title: string, content: string) => {
+    const create = async (title: string, content: string) => {
         try {
-            const { data } = await createArticleMutation({
+            const { data } = await createArticle({
                 variables: { title, content },
             });
 
@@ -44,7 +48,7 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     return (
-        <ArticleContext.Provider value={{ createArticle }}>
+        <ArticleContext.Provider value={{ createArticle: create }}>
             {children}
         </ArticleContext.Provider>
     );
