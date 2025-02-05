@@ -29,6 +29,7 @@ interface UserData {
 // Liste des images de bannière disponibles
 const BANNER_IMAGES = [
   "/psg1.webp",
+  "/psg2.webp",
   // Ajoutez ici toutes les images .webp disponibles
 ];
 
