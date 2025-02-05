@@ -1,5 +1,6 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, useContext, useState, useEffect} from 'react';
 import {useMutation, gql} from '@apollo/client';
+import Cookies from 'js-cookie';
 
 // Mutation pour l'inscription
 const SIGN_UP_MUTATION = gql`
@@ -46,6 +47,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     const [signUp] = useMutation(SIGN_UP_MUTATION);
     const [signIn] = useMutation(SIGN_IN_MUTATION);
 
+    useEffect(() => {
+        // Charger l'utilisateur à partir des cookies lors du montage
+        const token = Cookies.get('token');
+        const email = Cookies.get('email');
+        if (token && email) {
+            setUser({email, token});
+        }
+    }, []);
+
     // Fonction pour s'inscrire
     const register = async (email: string, password: string, name: string) => {
         try {
@@ -55,7 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
             if (data.signUp.success) {
                 setUser({email, token: data.signUp.token});
-                localStorage.setItem('token', data.signUp.token);
+                Cookies.set('token', data.signUp.token, {expires: 1}); // Expire dans 23h59
+                Cookies.set('email', email, {expires: 1});
             } else {
                 console.error(data.signUp.message);
                 throw new Error(data.signUp.message);
@@ -74,7 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
             if (data.signIn.success) {
                 setUser({email, token: data.signIn.token});
-                localStorage.setItem('token', data.signIn.token);
+                Cookies.set('token', data.signIn.token, {expires: 1}); // Expire dans 23h59
+                Cookies.set('email', email, {expires: 1});
             } else {
                 console.error(data.signIn.message);
                 throw new Error(data.signIn.message);
@@ -87,7 +99,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('token');
+        Cookies.remove('token');
+        Cookies.remove('email');
     };
 
     return (
