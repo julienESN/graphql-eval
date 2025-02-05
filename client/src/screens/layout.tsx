@@ -73,7 +73,7 @@ export default function Layout() {
                   className="justify-center h-12"
                 >
                   <NavLink
-                    to="/create"
+                    to="/createarticle"
                     className={({isActive}) =>
                       `flex justify-center ${isActive ? "text-primary" : ""}`
                     }
