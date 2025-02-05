@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client'
 import './index.css'
 import IndexScreen from "./screens/index";
 import LoginPage from "./screens/LoginPage"
+import Layout from "./screens/layout"
 import SignUpPage from "./screens/SignUpPage"
 import {BrowserRouter, Route, Routes} from "react-router";
 import {ApolloProvider} from "@apollo/client";
@@ -20,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
               path="/"
               element={
                 <ProtectedRoute>
-                  <IndexScreen/>
+                   <Route element={<Layout />}>
+                      <Route path="/" element={<IndexScreen/>}/>
+                   </Route>
                 </ProtectedRoute>
               }
             />
