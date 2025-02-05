@@ -3,12 +3,11 @@
  * @file layout.tsx
  *
  * Ce composant définit la structure principale de l'application avec une sidebar
- * contenant le logo et les liens de navigation principaux.
+ * contenant le logo et les liens de navigation principaux, et un footer en bas de page.
  */
 
-import {Outlet} from "react-router";
-import {NavLink} from "react-router";
-import {Home, PlusCircle, User, HandMetal} from "lucide-react";
+import { Outlet, NavLink } from 'react-router';
+import { Home, PlusCircle, User, HandMetal } from 'lucide-react';
 
 import {
   Sidebar,
@@ -19,37 +18,33 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
-/**
- * Composant Layout principal
- * Définit la structure de base avec sidebar et contenu principal
- */
+import Footer from '@/components/Footer'; // Assurez-vous que le chemin est correct
+
 export default function Layout() {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="flex h-screen">
+        {/* Sidebar à gauche */}
         <Sidebar variant="floating" collapsible="icon">
           <SidebarHeader className="flex items-center justify-between py-6 px-2">
-            <HandMetal/>
-            <SidebarTrigger/>
+            <HandMetal />
+            <SidebarTrigger />
           </SidebarHeader>
 
           <SidebarContent>
             <SidebarMenu>
               {/* Lien Home */}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Accueil"
-                >
+                <SidebarMenuButton asChild tooltip="Accueil">
                   <NavLink
                     to="/"
-                    className={({isActive}) =>
-                      isActive ? "text-primary" : ""
+                    className={({ isActive }) =>
+                      isActive ? 'text-primary' : ''
                     }
                   >
-                    <Home className="h-4 w-4"/>
+                    <Home className="h-4 w-4" />
                     <span>Accueil</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -57,17 +52,14 @@ export default function Layout() {
 
               {/* Lien Create */}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Créer"
-                >
+                <SidebarMenuButton asChild tooltip="Créer">
                   <NavLink
                     to="/create"
-                    className={({isActive}) =>
-                      isActive ? "text-primary" : ""
+                    className={({ isActive }) =>
+                      isActive ? 'text-primary' : ''
                     }
                   >
-                    <PlusCircle className="h-4 w-4"/>
+                    <PlusCircle className="h-4 w-4" />
                     <span>Créer</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -75,17 +67,14 @@ export default function Layout() {
 
               {/* Lien Account */}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Compte"
-                >
+                <SidebarMenuButton asChild tooltip="Compte">
                   <NavLink
                     to="/account"
-                    className={({isActive}) =>
-                      isActive ? "text-primary" : ""
+                    className={({ isActive }) =>
+                      isActive ? 'text-primary' : ''
                     }
                   >
-                    <User className="h-4 w-4"/>
+                    <User className="h-4 w-4" />
                     <span>Compte</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -94,10 +83,13 @@ export default function Layout() {
           </SidebarContent>
         </Sidebar>
 
-        {/* Contenu principal */}
-        <main className="flex-1 overflow-auto">
-          <Outlet/>
-        </main>
+        {/* Conteneur principal à droite */}
+        <div className="flex flex-col flex-1">
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
       </div>
     </SidebarProvider>
   );
