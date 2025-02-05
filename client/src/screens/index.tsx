@@ -1,11 +1,16 @@
-import {Button} from "@/components/ui/button.tsx";
+import {useAuth} from "@/context/AuthContext";
 
-export default function IndexScreen() {
-    return (<>
-            <a className={"text-red-400"}>Hello World</a>
+const IndexScreen: React.FC = () => {
+    const {user} = useAuth();
 
-            <Button>Click me</Button>
+    console.log(user);
 
-        </>
-    )
-}
+    return (
+        <div className="p-6">
+            <h1 className="text-2xl font-bold mb-4">Bienvenue sur MonApp</h1>
+            <p>Contenu de la page d'accueil...</p>
+        </div>
+    );
+};
+
+export default IndexScreen;
