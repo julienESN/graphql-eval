@@ -9,7 +9,8 @@ import {BrowserRouter, Route, Routes} from "react-router";
 import {ApolloProvider} from "@apollo/client";
 import client from './apolloClient';
 import {AuthProvider} from "@/context/AuthContext.tsx";
-import ProtectedRoute from "@/components/ProtectedRoute.tsx"; // Chemin vers votre Apollo Client
+import ProtectedRoute from "@/components/ProtectedRoute.tsx";
+import GuestRoute from "@/components/GuestRoute.tsx"; // Chemin vers votre Apollo Client
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -26,9 +27,22 @@ createRoot(document.getElementById('root')!).render(
             >
               <Route path="/" element={<IndexScreen/>}/>
             </Route>
-            <Route path={"/login"} element={<LoginPage/>}/>
-            <Route path={"/signup"} element={<SignUpPage/>}/>
-
+            <Route
+              path="/login"
+              element={
+                <GuestRoute>
+                  <LoginPage/>
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <GuestRoute>
+                  <SignUpPage/>
+                </GuestRoute>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
