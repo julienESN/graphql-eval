@@ -1,5 +1,3 @@
 /client/.vite
 /.idea
-server/prisma/dev.db-journal
-server/prisma/dev.db
 client/package-lock.json
