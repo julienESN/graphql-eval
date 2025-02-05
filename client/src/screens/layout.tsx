@@ -8,7 +8,7 @@
 
 import {Outlet} from "react-router";
 import {NavLink} from "react-router";
-import {Home, PlusCircle, User, Settings, LogOut, HandMetal} from "lucide-react";
+import {Home, PlusCircle, User, LogOut, HandMetal} from "lucide-react";
 
 import {
   Sidebar,
@@ -35,12 +35,11 @@ import {useAuth} from "@/context/AuthContext.tsx";
  * Définit la structure de base avec une sidebar fixe en mode icônes
  */
 export default function Layout() {
-
   const {logout} = useAuth()
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-screen overflow-hidden">
         <Sidebar variant="floating" collapsible="icon">
           <SidebarHeader className="flex items-center justify-center py-6">
             <HandMetal className="h-6 w-6"/>
@@ -95,15 +94,9 @@ export default function Layout() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <NavLink to="/account" className="flex items-center gap-2">
+                  <NavLink to="/user" className="flex items-center gap-2">
                     <User className="h-5 w-5"/>
                     <span>Mon Compte</span>
-                  </NavLink>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <NavLink to="/settings" className="flex items-center gap-2">
-                    <Settings className="h-5 w-5"/>
-                    <span>Paramètres</span>
                   </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator/>
@@ -120,7 +113,7 @@ export default function Layout() {
         </Sidebar>
 
         {/* Contenu principal */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto relative">
           <Outlet/>
         </main>
       </div>
