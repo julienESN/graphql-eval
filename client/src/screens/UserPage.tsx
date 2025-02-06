@@ -128,12 +128,12 @@ export default function UserPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-full w-full pt-[1vh] pl-[4vw]">
+    <div className="flex flex-col min-h-full w-full pt-[1vh] pl-[4vw] ">
       {/* En-tête du profil */}
       <div className="relative w-screen">
         {/* Bannière */}
         <div
-          className="w-full h-64 bg-cover bg-center rounded-tl-lg rounded-bl-lg shadow-lg"
+          className="w-full h-64 bg-cover bg-center rounded-lg shadow-lg"
           style={{
             backgroundImage: `url(${bannerImage})`,
           }}
