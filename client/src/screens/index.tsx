@@ -6,7 +6,7 @@ const IndexScreen: React.FC = () => {
 
 
     return (
-        <div className="p-6 ml-32 ">
+        <div className="p-6 mx-32 ">
             <h1 className="text-2xl font-bold mb-4">Bienvenue sur MonApp</h1>
             <p>Contenu de la page d'accueil...</p>
 
