@@ -1,4 +1,3 @@
-// src/resolvers/mutation/updateUser.ts
 import { PrismaClient, User } from '@prisma/client';
 
 interface UpdateUserArgs {

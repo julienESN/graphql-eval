@@ -1,4 +1,3 @@
-// src/resolvers/query/articleQueries.ts
 import { PrismaClient } from '@prisma/client';
 
 export const getArticle = async (
