@@ -113,9 +113,9 @@ const GET_ARTICLES_QUERY = gql`
 // Définir le type pour le contexte
 interface ArticleContextType {
     createArticle: (title: string, content: string) => Promise<void>;
-    updateArticle: (id: string, title?: string, content?: string) => Promise<void>;
-    deleteArticle: (id: string) => Promise<void>;
-    getArticle: (id: string) => Promise<GetArticleQuery['article'] | null>;
+    updateArticle: (id: number , title?: string, content?: string) => Promise<void>;
+    deleteArticle: (id: number ) => Promise<void>;
+    getArticle: (id: number ) => Promise<GetArticleQuery['article'] | null>;
     getArticles: () => Promise<GetArticlesQuery['articles'] | null>;
 }
 
@@ -146,7 +146,7 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
     };
 
     // Fonction pour modifier un article
-    const update = async (id: string, title?: string, content?: string) => {
+    const update = async (id: number , title?: string, content?: string) => {
         try {
             const {data} = await updateArticleMutation({
                 variables: {id, title, content},
@@ -162,7 +162,7 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
     };
 
     // Fonction pour supprimer un article
-    const remove = async (id: string) => {
+    const remove = async (id: number ) => {
         try {
             const {data} = await deleteArticleMutation({
                 variables: {id},
@@ -178,7 +178,7 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
     };
 
     // Fonction pour obtenir un article
-    const getArticle = async (id: string) => {
+    const getArticle = async (id: number ) => {
         try {
             const {data} = await refetchArticle({id});
             return data?.article || null;
