@@ -1,16 +1,8 @@
-/**
- * Page de profil utilisateur
- * @file UserPage.tsx
- *
- * Ce composant affiche le profil de l'utilisateur avec ses informations personnelles
- * et la liste de ses articles. Il permet également de modifier les informations du profil.
- */
-
 import {useState, useEffect} from "react";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 
-import {useQuery, gql, useMutation} from "@apollo/client";
+import {useQuery, useMutation} from "@apollo/client";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {
+  MeQuery,
+  MeQueryVariables,
+  UpdateUserMutation,
+  UpdateUserMutationVariables,
+} from "../generated/graphql"; // Types générés par GraphQL Codegen
+import {gql} from "@apollo/client";
 
 const UPDATE_USER_MUTATION = gql`
   mutation UpdateUser($email: String, $name: String) {
@@ -36,14 +35,6 @@ const UPDATE_USER_MUTATION = gql`
   }
 `;
 
-// Interface pour les données utilisateur
-interface UserData {
-  name: string;
-  email: string;
-  avatarUrl?: string;
-}
-
-// GraphQL query to fetch user data
 const ME_QUERY = gql`
   query Me {
     me {
@@ -54,20 +45,23 @@ const ME_QUERY = gql`
   }
 `;
 
-// Liste des images de bannière disponibles
 const BANNER_IMAGES = [
   "/psg1.webp",
   // Ajoutez ici toutes les images .webp disponibles
 ];
 
 export default function UserPage() {
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<{
+    name: string;
+    email: string;
+    avatarUrl?: string;
+  } | null>(null);
   const [bannerImage, setBannerImage] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newUsername, setNewUsername] = useState<string>("");
   const [newMail, setNewMail] = useState<string>("");
 
-  const [updateUser] = useMutation<{ updateUser: { success: boolean } }>(
+  const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(
     UPDATE_USER_MUTATION,
     {
       onCompleted: (data) => {
@@ -85,7 +79,7 @@ export default function UserPage() {
     }
   );
 
-  const {loading, error} = useQuery(ME_QUERY, {
+  const {loading, error} = useQuery<MeQuery, MeQueryVariables>(ME_QUERY, {
     onCompleted: (data) => {
       if (data?.me) {
         setUserData({
@@ -103,7 +97,7 @@ export default function UserPage() {
     setBannerImage(BANNER_IMAGES[randomIndex]);
   }, []);
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = (): void => {
     updateUser({variables: {email: newMail, name: newUsername}});
     setIsDialogOpen(false);
   };
