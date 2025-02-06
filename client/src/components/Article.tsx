@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
@@ -19,17 +19,25 @@ interface ArticleProps {
 const Article: React.FC<ArticleProps> = ({articleId, title, content, author, author_id, user_id}) => {
   const {deleteArticle} = useArticle();
 
+
+  const [stateDelete, setStateDelete] = useState<boolean>(false)
+
   const handleDelete = async () => {
     try {
       await deleteArticle(Number(articleId));
       console.log("Article supprimé avec succès");
+      setStateDelete(true)
     } catch (error) {
       console.error("Erreur lors de la suppression de l'article:", error);
     }
   };
 
+  if (stateDelete) {
+    return
+  }
+
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 ">
       <CardHeader className="flex flex-row justify-between">
         <div className="flex items-center cursor-pointer">
           <Avatar className="mr-4">
