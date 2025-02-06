@@ -1,45 +1,32 @@
 import React from "react";
-import {useQuery, gql} from "@apollo/client";
 import {Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
-import {LucideHeart, MessageCircle} from "lucide-react";
-
-// Définition de la requête GraphQL pour récupérer un article
-
-
-// Définition des types TypeScript pour les données de l'article
-interface Author {
-  name: string;
-  avatarUrl?: string;
-}
-
-interface Comment {
-  content: string;
-  author: Author;
-}
-
-interface Like {
-  user: Author;
-}
-
+import {LucideEdit, LucideHeart, LucideTrash, MessageCircle} from "lucide-react";
+import {useArticle} from "@/context/ArticleContext";
 
 interface ArticleProps {
-  articleId: number;
+  articleId: string;
   title: string;
+  author_id: number;
+  user_id: number;
   content: string;
   author: string;
+  like: number;
+  isLiked: boolean;
 }
 
-const Article: React.FC<ArticleProps> = ({articleId, title, content, author}) => {
+const Article: React.FC<ArticleProps> = ({articleId, title, content, author, author_id, user_id}) => {
+  const {deleteArticle} = useArticle();
 
-
-  const handleLike = () => {
-    console.log("like");
+  const handleDelete = async () => {
+    try {
+      await deleteArticle(Number(articleId));
+      console.log("Article supprimé avec succès");
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'article:", error);
+    }
   };
-
 
   return (
     <Card className="mb-6">
@@ -61,11 +48,26 @@ const Article: React.FC<ArticleProps> = ({articleId, title, content, author}) =>
         <p>{content}</p>
       </CardContent>
       <CardFooter className="flex gap-x-5">
-        <Button onClick={handleLike}> <LucideHeart className="" fill="none"/>
-          Like 0</Button>
-        <Button> <MessageCircle className="" fill="none"/>
-          Commentaire</Button>
-
+        <Button>
+          <LucideHeart className="" fill="none"/>
+          J'aime
+        </Button>
+        <Button>
+          <MessageCircle className="" fill="none"/>
+          Commentaire
+        </Button>
+        {user_id === author_id && (
+          <div className="ml-auto flex gap-x-2">
+            <Button className="bg-blue-500 hover:bg-blue-950">
+              <LucideEdit className="" fill="none"/>
+              Modifier
+            </Button>
+            <Button onClick={handleDelete} className="bg-red-500 hover:bg-red-950">
+              <LucideTrash className="" fill="none"/>
+              Supprimer
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

@@ -47,7 +47,6 @@ const ME_QUERY = gql`
 
 const BANNER_IMAGES = [
   "/psg1.webp",
-  // Ajoutez ici toutes les images .webp disponibles
 ];
 
 export default function UserPage() {
