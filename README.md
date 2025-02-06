@@ -76,6 +76,12 @@ cd client
 npm install
 ```
 
+
+3.  **Générer les types avec Codegen :**
+
+```bash
+npm run generate
+```
   
 
 4.  **Lancer le serveur :**
