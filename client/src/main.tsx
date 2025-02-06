@@ -31,6 +31,8 @@ createRoot(document.getElementById('root')!).render(
                     >
                         <Route path="/" element={<IndexScreen/>}/>
                         <Route path="/user" element={<UserPage/>}/>
+                        <Route path="/createarticle" element={<CreateArticlePage/>}/>
+
                     </Route>
                     <Route
                         path="/login"
@@ -48,12 +50,7 @@ createRoot(document.getElementById('root')!).render(
                             </GuestRoute>
                         }
                     />
-                    <Route
-                        path="/createarticle"
-                        element={
-                            <CreateArticlePage/>
-                        }
-                    />
+
                 </Routes>
             </BrowserRouter>
         </ArticleProvider>
