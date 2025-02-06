@@ -1,4 +1,3 @@
-// src/index.ts (extrait)
 import { PrismaClient } from '@prisma/client';
 import { ApolloServer } from 'apollo-server';
 import { schema } from './schema/schema';
