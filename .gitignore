@@ -2,3 +2,4 @@
 /.idea
 client/package-lock.json
 .DS_Store
+client/src/generated/graphql.tsx
