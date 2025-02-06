@@ -85,7 +85,7 @@ export default function UserPage() {
     }
   );
 
-  const {loading, error, data} = useQuery(ME_QUERY, {
+  const {loading, error} = useQuery(ME_QUERY, {
     onCompleted: (data) => {
       if (data?.me) {
         setUserData({
@@ -128,12 +128,12 @@ export default function UserPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-full w-full">
+    <div className="flex flex-col min-h-full w-full pt-[1vh] pl-[4vw]">
       {/* En-tête du profil */}
       <div className="relative w-screen">
         {/* Bannière */}
         <div
-          className="w-full h-64 bg-cover bg-center rounded-bl-lg shadow-lg"
+          className="w-full h-64 bg-cover bg-center rounded-tl-lg rounded-bl-lg shadow-lg"
           style={{
             backgroundImage: `url(${bannerImage})`,
           }}
