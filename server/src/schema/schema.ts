@@ -165,15 +165,15 @@ const resolvers = {
     unlikeArticle,
   },
 
-  Article: {
-    likes: async (parent: any, _: unknown, { prisma }: { prisma: any }) => {
-      return prisma.like.findMany({
-        where: { articleId: parent.id },
-        include: { user: true, article: true },
-      });
+    Article: {
+      likes: async (parent: any, _: unknown, { prisma }: { prisma: any }) => {
+        return prisma.like.findMany({
+          where: { articleId: parent.id },
+          include: { user: true, article: true },
+        });
+      },
     },
-  },
-};
+  };
 
 export const schema = makeExecutableSchema({
   typeDefs,

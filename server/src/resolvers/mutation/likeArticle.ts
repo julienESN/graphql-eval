@@ -1,4 +1,5 @@
 import { PrismaClient, Like, User, Article } from '@prisma/client';
+import { MutationResolvers } from '../../generated/graphql';
 
 interface LikeArticleArgs {
   articleId: number;
@@ -11,10 +12,10 @@ export interface LikeResponse {
   like: (Like & { user: User; article: Article }) | null;
 }
 
-export const likeArticle = async (
-  _: unknown,
-  { articleId }: LikeArticleArgs,
-  { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
+export const likeArticle: MutationResolvers['likeArticle'] = async (
+  _,
+  { articleId },
+  { prisma, user }
 ): Promise<LikeResponse> => {
   if (!user) {
     return {

@@ -13,7 +13,7 @@ interface CommentResponse {
 }
 
 export const updateComment = async (
-  _: unknown,
+  _: {},
   { id, content }: UpdateCommentArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<CommentResponse> => {

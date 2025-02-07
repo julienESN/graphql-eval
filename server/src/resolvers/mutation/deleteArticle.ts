@@ -12,7 +12,7 @@ interface ArticleResponse {
 }
 
 export const deleteArticle = async (
-  _: unknown,
+  _: {},
   { id }: DeleteArticleArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<ArticleResponse> => {
