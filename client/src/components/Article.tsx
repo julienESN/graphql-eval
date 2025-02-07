@@ -5,42 +5,66 @@ import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {LucideEdit, LucideHeart, LucideTrash, MessageCircle} from "lucide-react";
 import {useArticle} from "@/context/ArticleContext";
 
+// Typage strict des props basé sur les types générés
 interface ArticleProps {
-  articleId: string;
-  title: string;
-  author_id: number;
-  user_id: number;
-  content: string;
-  author: string;
-  like: number;
-  isLiked: boolean;
+  articleId: string; // ID de l'article
+  title: string; // Titre de l'article
+  author_id: number; // ID de l'auteur
+  user_id: number; // ID de l'utilisateur actuel
+  content: string; // Contenu de l'article
+  author: string; // Nom de l'auteur
+  like: number; // Nombre de likes
+  isLiked: boolean; // Indique si l'utilisateur a liké
 }
 
-const Article: React.FC<ArticleProps> = ({articleId, title, content, author, author_id, user_id, like, isLiked}) => {
-  const {deleteArticle} = useArticle();
+const Article: React.FC<ArticleProps> = ({
+                                           articleId,
+                                           title,
+                                           content,
+                                           author,
+                                           author_id,
+                                           user_id,
+                                           like,
+                                           isLiked,
+                                         }) => {
+  const {deleteArticle, likeArticle, unlikeArticle} = useArticle(); // Hooks pour les mutations
+  const [currentLike, setCurrentLike] = useState<number>(like);
+  const [liked, setLiked] = useState<boolean>(isLiked);
+  const [stateDelete, setStateDelete] = useState<boolean>(false);
 
+  // Gestion du like/unlike
+  const handleLike = async (): Promise<void> => {
+    try {
+      if (liked) {
+        await unlikeArticle(Number(articleId));
+        setCurrentLike((prev) => Math.max(prev - 1, 0));
+      } else {
+        await likeArticle(Number(articleId));
+        setCurrentLike((prev) => prev + 1);
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Erreur lors du traitement du like/dislike:", error);
+    }
+  };
 
-  const [stateDelete, setStateDelete] = useState<boolean>(false)
-
-  const handleDelete = async () => {
+  // Gestion de la suppression
+  const handleDelete = async (): Promise<void> => {
     try {
       await deleteArticle(Number(articleId));
       console.log("Article supprimé avec succès");
-      setStateDelete(true)
+      setStateDelete(true);
     } catch (error) {
       console.error("Erreur lors de la suppression de l'article:", error);
     }
   };
 
-  const colorLike = () => {
-    if (isLiked) {
-      return "red"
-    }
-    return "none"
-  }
+  // Couleur du bouton de like
+  const colorLike = (): string => (liked ? "red" : "none");
 
+  // Si l'article est supprimé, ne rien afficher
   if (stateDelete) {
-    return
+    return null;
   }
 
   return (
@@ -48,7 +72,7 @@ const Article: React.FC<ArticleProps> = ({articleId, title, content, author, aut
       <CardHeader className="flex flex-row justify-between">
         <div className="flex items-center cursor-pointer">
           <Avatar className="mr-4">
-            <AvatarImage src={author?.url}/>
+            <AvatarImage src={""}/>
             <AvatarFallback>{author.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
@@ -63,8 +87,8 @@ const Article: React.FC<ArticleProps> = ({articleId, title, content, author, aut
         <p>{content}</p>
       </CardContent>
       <CardFooter className="flex gap-x-5">
-        <Button>
-          {like}
+        <Button onClick={handleLike}>
+          {currentLike}
           <LucideHeart className="" fill={colorLike()}/>
           J'aime
         </Button>
