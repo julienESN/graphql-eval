@@ -8,11 +8,13 @@ interface UserResponse {
   user: User | null;
 }
 
-export const deleteUser = async (
-  _: unknown,
-  __: unknown,
-  { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
-): Promise<UserResponse> => {
+export const deleteUser = async ({
+  prisma,
+  user,
+}: {
+  prisma: PrismaClient;
+  user: { id: number } | null;
+}): Promise<UserResponse> => {
   if (!user) {
     return {
       code: 401,

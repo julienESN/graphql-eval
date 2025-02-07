@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
 export const getComment = async (
-  _: unknown,
   { id }: { id: number },
   { prisma }: { prisma: PrismaClient }
 ) => {
@@ -11,18 +10,13 @@ export const getComment = async (
   });
 };
 
-export const getComments = async (
-  _: unknown,
-  __: unknown,
-  { prisma }: { prisma: PrismaClient }
-) => {
+export const getComments = async ({ prisma }: { prisma: PrismaClient }) => {
   return prisma.comment.findMany({
     include: { author: true, article: true },
   });
 };
 
 export const getCommentsByArticle = async (
-  _: unknown,
   { articleId }: { articleId: number },
   { prisma }: { prisma: PrismaClient }
 ) => {

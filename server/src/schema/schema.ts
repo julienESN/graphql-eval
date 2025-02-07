@@ -1,6 +1,6 @@
 import { gql } from 'apollo-server';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-
+import { PrismaClient } from '@prisma/client';
 import { signIn } from '../resolvers/mutation/signIn';
 import { signUp } from '../resolvers/mutation/signUp';
 import { updateUser } from '../resolvers/mutation/updateUser';
@@ -138,9 +138,13 @@ const typeDefs = gql`
   }
 `;
 
+type ArticleParent = {
+  id: number;
+};
+
 const resolvers = {
   Query: {
-    hello: () => 'Hello world!',
+    hello: (): string => 'Hello world!',
     me,
     user: getUser,
     users: getUsers,
@@ -164,9 +168,12 @@ const resolvers = {
     likeArticle,
     unlikeArticle,
   },
-
   Article: {
-    likes: async (parent: any, _: unknown, { prisma }: { prisma: any }) => {
+    likes: async (
+      parent: ArticleParent,
+      _args: never,
+      { prisma }: { prisma: PrismaClient }
+    ) => {
       return prisma.like.findMany({
         where: { articleId: parent.id },
         include: { user: true, article: true },

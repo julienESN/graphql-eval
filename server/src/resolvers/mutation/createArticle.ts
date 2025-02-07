@@ -13,7 +13,6 @@ interface ArticleResponse {
 }
 
 export const createArticle = async (
-  _: unknown,
   { title, content }: CreateArticleArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<ArticleResponse> => {

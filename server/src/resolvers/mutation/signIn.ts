@@ -16,7 +16,6 @@ interface SignInResponse {
 
 // Note : le contexte de notre Apollo Server doit inclure l'instance Prisma, par exemple : { prisma: PrismaClient }
 export const signIn = async (
-  _: unknown,
   { email, password }: SignInArgs,
   { prisma }: { prisma: PrismaClient }
 ): Promise<SignInResponse> => {

@@ -1,19 +1,21 @@
-import {PrismaClient} from '@prisma/client';
-import {AuthenticatedUser} from '../../modules/auth';
+import { PrismaClient } from '@prisma/client';
+import { AuthenticatedUser } from '../../modules/auth';
 
-export const me = async (
-  _: unknown,
-  __: unknown,
-  {prisma, user}: { prisma: PrismaClient; user: AuthenticatedUser | null }
-) => {
+export const me = async ({
+  prisma,
+  user,
+}: {
+  prisma: PrismaClient;
+  user: AuthenticatedUser | null;
+}) => {
   if (!user) {
     return null;
   }
   return prisma.user.findUnique({
-    where: {id: user.id},
+    where: { id: user.id },
     include: {
       articles: {
-        include: {author: true, comments: true},
+        include: { author: true, comments: true },
       },
     },
   });
@@ -21,11 +23,10 @@ export const me = async (
 
 // Récupure l'user identifié par son id
 export const getUser = async (
-  _: unknown,
-  {id}: { id: number },
-  {prisma}: { prisma: PrismaClient }
+  { id }: { id: number },
+  { prisma }: { prisma: PrismaClient }
 ) => {
-  const foundUser = await prisma.user.findUnique({where: {id}});
+  const foundUser = await prisma.user.findUnique({ where: { id } });
   if (!foundUser) {
     throw new Error('User not found');
   }
@@ -33,10 +34,6 @@ export const getUser = async (
 };
 
 // Récupère tous les users
-export const getUsers = async (
-  _: unknown,
-  __: unknown,
-  {prisma}: { prisma: PrismaClient }
-) => {
+export const getUsers = async ({ prisma }: { prisma: PrismaClient }) => {
   return prisma.user.findMany();
 };

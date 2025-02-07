@@ -14,7 +14,6 @@ interface CommentResponse {
 }
 
 export const createComment = async (
-  _: unknown,
   { articleId, content }: CreateCommentArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<CommentResponse> => {

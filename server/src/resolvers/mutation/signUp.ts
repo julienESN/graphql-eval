@@ -15,9 +15,7 @@ interface SignUpResponse {
   token: string | null;
 }
 
-// Le contexte doit contenir Prisma (ex: { prisma: PrismaClient })
 export const signUp = async (
-  _: unknown,
   { email, password, name }: SignUpArgs,
   { prisma }: { prisma: PrismaClient }
 ): Promise<SignUpResponse> => {
