@@ -16,7 +16,7 @@ interface ArticleProps {
   isLiked: boolean;
 }
 
-const Article: React.FC<ArticleProps> = ({articleId, title, content, author, author_id, user_id}) => {
+const Article: React.FC<ArticleProps> = ({articleId, title, content, author, author_id, user_id, like, isLiked}) => {
   const {deleteArticle} = useArticle();
 
 
@@ -31,6 +31,13 @@ const Article: React.FC<ArticleProps> = ({articleId, title, content, author, aut
       console.error("Erreur lors de la suppression de l'article:", error);
     }
   };
+
+  const colorLike = () => {
+    if (isLiked) {
+      return "red"
+    }
+    return "none"
+  }
 
   if (stateDelete) {
     return
@@ -57,7 +64,8 @@ const Article: React.FC<ArticleProps> = ({articleId, title, content, author, aut
       </CardContent>
       <CardFooter className="flex gap-x-5">
         <Button>
-          <LucideHeart className="" fill="none"/>
+          {like}
+          <LucideHeart className="" fill={colorLike()}/>
           J'aime
         </Button>
         <Button>
