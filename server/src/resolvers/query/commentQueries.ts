@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export const getComment = async (
-  _: unknown,
+  _: {},
   { id }: { id: number },
   { prisma }: { prisma: PrismaClient }
 ) => {
@@ -12,8 +12,8 @@ export const getComment = async (
 };
 
 export const getComments = async (
-  _: unknown,
-  __: unknown,
+  _: {},
+  __: {},
   { prisma }: { prisma: PrismaClient }
 ) => {
   return prisma.comment.findMany({
@@ -22,7 +22,7 @@ export const getComments = async (
 };
 
 export const getCommentsByArticle = async (
-  _: unknown,
+  _: {},
   { articleId }: { articleId: number },
   { prisma }: { prisma: PrismaClient }
 ) => {

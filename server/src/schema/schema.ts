@@ -1,3 +1,4 @@
+import { PrismaClient, Like } from '@prisma/client';
 import { gql } from 'apollo-server';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
@@ -120,7 +121,7 @@ const typeDefs = gql`
     createdAt: DateTime!
     author: User!
     comments: [Comment!]!
-    likes: [Like!]! # Nouveau champ pour afficher les likes de l'article
+    likes: [Like!]!
   }
 
   type Comment {
@@ -137,6 +138,17 @@ const typeDefs = gql`
     article: Article!
   }
 `;
+
+// Définissez un type pour l'objet parent du resolver Article
+interface ArticleParent {
+  id: number;
+}
+
+// Définissez un type pour le contexte
+interface Context {
+  prisma: PrismaClient;
+  // Ajoutez d'autres propriétés de contexte si nécessaire (par exemple, user)
+}
 
 const resolvers = {
   Query: {
@@ -164,9 +176,12 @@ const resolvers = {
     likeArticle,
     unlikeArticle,
   },
-
   Article: {
-    likes: async (parent: any, _: unknown, { prisma }: { prisma: any }) => {
+    likes: async (
+      parent: ArticleParent,
+      _args: {},
+      { prisma }: { prisma: PrismaClient }
+    ): Promise<Like[]> => {
       return prisma.like.findMany({
         where: { articleId: parent.id },
         include: { user: true, article: true },

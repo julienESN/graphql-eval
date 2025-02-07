@@ -12,7 +12,7 @@ interface CommentResponse {
 }
 
 export const deleteComment = async (
-  _: unknown,
+  _: {},
   { id }: DeleteCommentArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<CommentResponse> => {

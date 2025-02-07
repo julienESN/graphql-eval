@@ -13,7 +13,7 @@ interface UserResponse {
 }
 
 export const updateUser = async (
-  _: unknown,
+  _: {},
   { email, name }: UpdateUserArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<UserResponse> => {
