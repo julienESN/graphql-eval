@@ -1,13 +1,16 @@
 import Article from "@/components/Article";
 import {useArticle} from "@/context/ArticleContext";
 import {useEffect, useState, ReactElement} from "react";
-import {useAuth} from "@/context/AuthContext.tsx";
 import {gql, useQuery} from "@apollo/client";
 import {
     MeQuery,
     MeQueryVariables,
+} from "../generated/graphql";
+import {MultiSelect} from "@/components/multi-select";
+import {Label} from "@/components/ui/label.tsx";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import {Input} from "@/components/ui/input.tsx";
 
-} from "../generated/graphql"; // Types générés par GraphQL Codegen
 interface AuthorType {
     id: number;
     name: string;
@@ -40,12 +43,11 @@ const ME_QUERY = gql`
 
 const IndexScreen: React.FC = (): ReactElement => {
     const {getArticles} = useArticle();
-    const { data: userData } = useQuery<MeQuery, MeQueryVariables>(ME_QUERY);
+    const {data: userData, loading: userLoading} = useQuery<MeQuery, MeQueryVariables>(ME_QUERY);
     const [data, setData] = useState<ReadonlyArray<ArticleType>>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Nouveaux états pour le filtrage et le tri
     const [titleFilter, setTitleFilter] = useState<string>("");
     const [selectedAuthors, setSelectedAuthors] = useState<Set<number>>(new Set());
     const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC");
@@ -54,7 +56,6 @@ const IndexScreen: React.FC = (): ReactElement => {
         const fetchData = async (): Promise<void> => {
             try {
                 const response: ReadonlyArray<ArticleType> = await getArticles();
-                console.log(response);
                 setData(response);
                 setError(null);
             } catch (err: Error | unknown) {
@@ -71,30 +72,13 @@ const IndexScreen: React.FC = (): ReactElement => {
         fetchData();
     }, [getArticles]);
 
-    // Logique pour cocher automatiquement tous les utilisateurs par défaut
     useEffect(() => {
-        if (userData) {
+        if (data.length > 0) {
             const allUserIds = data.map((article) => article.author.id);
             setSelectedAuthors(new Set(allUserIds));
         }
-    }, [userData, data]);
+    }, [data]);
 
-    console.log("user", userData)
-
-    // Fonction pour gérer le changement de sélection des auteurs
-    const handleAuthorCheckboxChange = (authorId: number) => {
-        setSelectedAuthors((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(authorId)) {
-                newSet.delete(authorId);
-            } else {
-                newSet.add(authorId);
-            }
-            return newSet;
-        });
-    };
-
-    // Filtrer et trier les articles en fonction des filtres et de l'ordre de tri
     const filteredData = data
         .filter((article) => {
             const matchesTitle = article.title.toLowerCase().includes(titleFilter.toLowerCase());
@@ -117,61 +101,57 @@ const IndexScreen: React.FC = (): ReactElement => {
         <div className="p-6 mx-32">
             <h1 className="text-4xl font-bold mb-6">Liste des Articles</h1>
 
-            {/* Formulaire de filtrage */}
-            <div className="mb-4">
-                <label htmlFor="filter"><strong>Filtrer par titre : </strong></label>
-                <input
-                    type="text"
-                    placeholder="Filtrer par titre"
-                    value={titleFilter}
-                    onChange={(e) => setTitleFilter(e.target.value)}
-                    className="border p-2 mb-2"
-                />
-                <div>
-                    <h2 className="font-bold">Filtrer par auteur :</h2>
-                    <input
-                        type="checkbox"
-                        id="allUsers"
-                        checked={selectedAuthors.size === data.length}
-                        onChange={() => {
-                            if (selectedAuthors.size === data.length) {
-                                setSelectedAuthors(new Set());
-                            } else {
-                                const allUserIds = data.map((article) => article.author.id);
-                                setSelectedAuthors(new Set(allUserIds));
-                            }
-                        }}
+            <div className="mb-4 flex flex-row items-center space-x-4">
+                <div className="flex items-center">
+                    <Label htmlFor="filter" className="mr-2 font-bold">Filtrer par titre :</Label>
+                    <Input
+                        id="filter"
+                        type="text"
+                        placeholder="Filtrer par titre"
+                        value={titleFilter}
+                        onChange={(e) => setTitleFilter(e.target.value)}
+                        className="w-64"
                     />
-                    <label htmlFor="allUsers">Tous les utilisateurs</label>
-                    {data.map((article) => (
-                        <div key={article.author.id}>
-                            <input
-                                type="checkbox"
-                                id={`author-${article.author.id}`}
-                                checked={selectedAuthors.has(article.author.id)}
-                                onChange={() => handleAuthorCheckboxChange(article.author.id)}
-                            />
-                            <label htmlFor={`author-${article.author.id}`}>{article.author.name}</label>
-                        </div>
-                    ))}
                 </div>
-                <div className="mt-4">
-                    <label className="font-bold">Trier par date :</label>
-                    <select
+                <div className="flex items-center">
+                    <MultiSelect
+                        options={data.reduce((uniqueAuthors, article) => {
+                            if (!uniqueAuthors.some(author => author.value === article.author.id.toString())) {
+                                uniqueAuthors.push({label: article.author.name, value: article.author.id.toString()});
+                            }
+                            return uniqueAuthors;
+                        }, [] as { value: string; label: string }[])}
+                        onValueChange={(selectedOptions) => {
+                            const selectedIds = new Set(selectedOptions.map((option) => Number(option)));
+                            setSelectedAuthors(selectedIds);
+                        }}
+                        defaultValue={[...selectedAuthors].map((authorId) => authorId.toString())}
+                        placeholder="Filtre par Auteur"
+                        animation={0.3}
+                        maxCount={5}
+                        className="w-64"
+                    />
+                </div>
+                <div className="flex items-center">
+                    <Label className="mr-2 font-bold">Trier par date :</Label>
+                    <Select
                         value={sortOrder}
-                        onChange={(e) => handleSortChange(e.target.value as "ASC" | "DESC")}
-                        className="border p-2 ml-2"
+                        onValueChange={(value) => handleSortChange(value as "ASC" | "DESC")}
                     >
-                        <option value="ASC">Plus ancien en premier</option>
-                        <option value="DESC">Plus récent en premier</option>
-                    </select>
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Sélectionner un ordre"/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ASC">Plus ancien en premier</SelectItem>
+                            <SelectItem value="DESC">Plus récent en premier</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
-
-            {isLoading && <p>Chargement en cours...</p>}
+            {(isLoading || userLoading) && <p>Chargement en cours...</p>}
             {error && <p className="text-red-500">{error}</p>}
+            {filteredData.length === 0 && !isLoading && <p>Aucun article trouvé pour les auteurs sélectionnés.</p>}
 
-            {/* Affichage des articles filtrés et triés */}
             <div>
                 {filteredData.map((item) => (
                     <Article
@@ -179,11 +159,11 @@ const IndexScreen: React.FC = (): ReactElement => {
                         articleId={item.id}
                         author={item.author.name}
                         author_id={item.author.id}
-                        user_id={userData?.id}
+                        user_id={userData?.me?.id ?? null}
                         title={item.title}
                         content={item.content}
                         like={item.likes.length}
-                        isLiked={item.likes.some((like) => like.user.id === userData?.id)}
+                        isLiked={item.likes.some((like) => like.user.id === userData?.me?.id)}
                     />
                 ))}
             </div>
