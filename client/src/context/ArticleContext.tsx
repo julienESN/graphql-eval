@@ -93,6 +93,7 @@ const GET_ARTICLES_QUERY = gql`
             id
             title
             content
+            createdAt
             author {
                 id
                 email
