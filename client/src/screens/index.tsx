@@ -50,7 +50,8 @@ const IndexScreen: React.FC = (): ReactElement => {
 
     const [titleFilter, setTitleFilter] = useState<string>("");
     const [selectedAuthors, setSelectedAuthors] = useState<Set<number>>(new Set());
-    const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC");
+    const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+    const [sortByLikes, setSortByLikes] = useState<"MOST_LIKED" | "LEAST_LIKED" | null>(null);
 
     useEffect(() => {
         const fetchData = async (): Promise<void> => {
@@ -86,15 +87,28 @@ const IndexScreen: React.FC = (): ReactElement => {
             return matchesTitle && matchesAuthor;
         })
         .sort((a, b) => {
-            if (sortOrder === "ASC") {
+            if (sortByLikes === "MOST_LIKED") {
+                return b.likes.length - a.likes.length;
+            } else if (sortByLikes === "LEAST_LIKED") {
+                return a.likes.length - b.likes.length;
+            } else if (sortOrder === "ASC") {
                 return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
             } else {
                 return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             }
         });
 
-    const handleSortChange = (value: "ASC" | "DESC") => {
-        setSortOrder(value);
+    const handleSortChange = (value: "ASC" | "DESC" | "MOST_LIKED" | "LEAST_LIKED") => {
+        if (value === "MOST_LIKED") {
+            setSortByLikes("MOST_LIKED");
+            setSortOrder(null);
+        } else if (value === "LEAST_LIKED") {
+            setSortByLikes("LEAST_LIKED");
+            setSortOrder(null);
+        } else {
+            setSortByLikes(null);
+            setSortOrder(value);
+        }
     };
 
     return (
@@ -133,10 +147,10 @@ const IndexScreen: React.FC = (): ReactElement => {
                     />
                 </div>
                 <div className="flex items-center">
-                    <Label className="mr-2 font-bold">Trier par date :</Label>
+                    <Label className="mr-2 font-bold">Trier par :</Label>
                     <Select
-                        value={sortOrder}
-                        onValueChange={(value) => handleSortChange(value as "ASC" | "DESC")}
+                        value={sortByLikes ? sortByLikes : sortOrder}
+                        onValueChange={(value) => handleSortChange(value as "ASC" | "DESC" | "MOST_LIKED" | "LEAST_LIKED")}
                     >
                         <SelectTrigger className="w-[200px]">
                             <SelectValue placeholder="Sélectionner un ordre"/>
@@ -144,6 +158,8 @@ const IndexScreen: React.FC = (): ReactElement => {
                         <SelectContent>
                             <SelectItem value="ASC">Plus ancien en premier</SelectItem>
                             <SelectItem value="DESC">Plus récent en premier</SelectItem>
+                            <SelectItem value="MOST_LIKED">Les plus aimés</SelectItem>
+                            <SelectItem value="LEAST_LIKED">Les moins aimés</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
