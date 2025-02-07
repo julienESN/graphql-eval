@@ -10,6 +10,10 @@ import {
     GetArticleQuery,
     GetArticleQueryVariables,
     GetArticlesQuery,
+    LikeArticleMutation,
+    LikeArticleMutationVariables,
+    UnlikeArticleMutation,
+    UnlikeArticleMutationVariables,
 } from '../generated/graphql';
 
 // Mutation pour créer un article
@@ -111,6 +115,49 @@ const GET_ARTICLES_QUERY = gql`
     }
 `;
 
+// Mutation pour liker un article
+const LIKE_ARTICLE_MUTATION = gql`
+    mutation LikeArticle($articleId: Int!) {
+        likeArticle(articleId: $articleId) {
+            code
+            success
+            message
+            like {
+                id
+                user {
+                    id
+                    name
+                }
+                article {
+                    id
+                    title
+                }
+            }
+        }
+    }
+`;
+
+// Mutation pour unliker un article
+const UNLIKE_ARTICLE_MUTATION = gql`
+    mutation UnlikeArticle($articleId: Int!) {
+        unlikeArticle(articleId: $articleId) {
+            code
+            success
+            message
+            like {
+                id
+                user {
+                    id
+                    name
+                }
+                article {
+                    id
+                    title
+                }
+            }
+        }
+    }
+`;
 
 // Définir le type pour le contexte
 interface ArticleContextType {
@@ -119,6 +166,8 @@ interface ArticleContextType {
     deleteArticle: (id: number) => Promise<void>;
     getArticle: (id: number) => Promise<GetArticleQuery['article'] | null>;
     getArticles: () => Promise<GetArticlesQuery['articles'] | null>;
+    likeArticle: (articleId: number) => Promise<void>;
+    unlikeArticle: (articleId: number) => Promise<void>;
 }
 
 const ArticleContext = createContext<ArticleContextType | undefined>(undefined);
@@ -127,9 +176,10 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
     const [createArticle] = useMutation<CreateArticleMutation, CreateArticleMutationVariables>(CREATE_ARTICLE_MUTATION);
     const [updateArticleMutation] = useMutation<UpdateArticleMutation, UpdateArticleMutationVariables>(UPDATE_ARTICLE_MUTATION);
     const [deleteArticleMutation] = useMutation<DeleteArticleMutation, DeleteArticleMutationVariables>(DELETE_ARTICLE_MUTATION);
+    const [likeArticleMutation] = useMutation<LikeArticleMutation, LikeArticleMutationVariables>(LIKE_ARTICLE_MUTATION);
+    const [unlikeArticleMutation] = useMutation<UnlikeArticleMutation, UnlikeArticleMutationVariables>(UNLIKE_ARTICLE_MUTATION);
     const {refetch: refetchArticle} = useQuery<GetArticleQuery, GetArticleQueryVariables>(GET_ARTICLE_QUERY);
     const {refetch: refetchArticles} = useQuery<GetArticlesQuery>(GET_ARTICLES_QUERY);
-
 
     // Fonction pour créer un article
     const create = async (title: string, content: string) => {
@@ -201,9 +251,39 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
         }
     };
 
+    // Fonction pour liker un article
+    const likeArticle = async (articleId: number) => {
+        try {
+            const { data } = await likeArticleMutation({
+                variables: { articleId },
+            });
+
+            if (!data?.likeArticle?.success) {
+                console.error(data?.likeArticle?.message ?? 'Erreur lors du like de l\'article');
+            }
+        } catch (err) {
+            console.error('Erreur lors du like de l\'article:', err);
+        }
+    };
+
+    // Fonction pour unliker un article
+    const unlikeArticle = async (articleId: number) => {
+        try {
+            const { data } = await unlikeArticleMutation({
+                variables: { articleId },
+            });
+
+            if (!data?.unlikeArticle?.success) {
+                console.error(data?.unlikeArticle?.message ?? 'Erreur lors du unlike de l\'article');
+            }
+        } catch (err) {
+            console.error('Erreur lors du unlike de l\'article:', err);
+        }
+    };
+
     return (
         <ArticleContext.Provider
-            value={{createArticle: create, updateArticle: update, deleteArticle: remove, getArticle, getArticles}}>
+            value={{ createArticle: create, updateArticle: update, deleteArticle: remove, getArticle, getArticles, likeArticle, unlikeArticle }}>
             {children}
         </ArticleContext.Provider>
     );
