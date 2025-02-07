@@ -49,7 +49,7 @@ const Commentary: React.FC<CommentaryProps> = ({id, user_id, username, content, 
                         <AvatarFallback>{avatarLetter}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <CardTitle>@ {username} {user_id} {commentary_author_id}</CardTitle>
+                        <CardTitle>@ {username}</CardTitle>
                     </div>
                 </div>
             </CardHeader>
