@@ -246,6 +246,8 @@ export default function UserPage(): JSX.Element {
                     author={item.author.name}
                     author_id={parseInt(item.author.id)}
                     user_id={userData?.id}
+                    showCommentary={true}
+
                     title={item.title}
                     content={item.content}
                     like={item.likes.length}

@@ -4,7 +4,8 @@ import {Button} from "@/components/ui/button";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {LucideEdit, LucideHeart, LucideTrash, MessageCircle} from "lucide-react";
 import {useArticle} from "@/context/ArticleContext";
-import {NavLink} from "react-router";
+import {useNavigate, NavLink} from 'react-router';
+
 
 // Typage strict des props basé sur les types générés
 interface ArticleProps {
@@ -16,6 +17,7 @@ interface ArticleProps {
   author: string; // Nom de l'auteur
   like: number; // Nombre de likes
   isLiked: boolean; // Indique si l'utilisateur a liké
+  showCommentary: boolean;
 }
 
 const Article: React.FC<ArticleProps> = ({
@@ -27,11 +29,15 @@ const Article: React.FC<ArticleProps> = ({
                                            user_id,
                                            like,
                                            isLiked,
+                                           showCommentary
                                          }) => {
   const {deleteArticle, likeArticle, unlikeArticle} = useArticle(); // Hooks pour les mutations
   const [currentLike, setCurrentLike] = useState<number>(like);
   const [liked, setLiked] = useState<boolean>(isLiked);
   const [stateDelete, setStateDelete] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
 
   // Gestion du like/unlike
   const handleLike = async (): Promise<void> => {
@@ -77,7 +83,7 @@ const Article: React.FC<ArticleProps> = ({
             <AvatarFallback>{author.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle>@ {author}</CardTitle>
+            <CardTitle>@ {author} {user_id} == {author_id}</CardTitle>
           </div>
         </div>
         <div className="flex flex-1 justify-center cursor-pointer">
@@ -93,10 +99,18 @@ const Article: React.FC<ArticleProps> = ({
           <LucideHeart className="" fill={colorLike()}/>
           J'aime
         </Button>
-        <Button>
-          <MessageCircle className="" fill="none"/>
-          Commentaire
-        </Button>
+
+        {showCommentary && (<Button onClick={() => {
+
+            navigate(`/articlepage/${articleId}`);
+          }}>
+
+            <MessageCircle className="" fill="none"/>
+            Voir les commentaires
+          </Button>
+
+        )}
+
         {user_id === author_id && (
           <div className="ml-auto flex gap-x-2">
             <NavLink to={`/updatearticle/${articleId}`}>

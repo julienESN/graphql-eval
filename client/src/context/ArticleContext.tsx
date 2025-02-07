@@ -76,15 +76,15 @@ const GET_ARTICLE_QUERY = gql`
             content
             author {
                 id
+                name
                 email
             }
-            comments {
+            likes {
+              id
+              user {
                 id
-                content
-                author {
-                    id
-                    email
-                }
+                name
+              }
             }
         }
     }
@@ -254,8 +254,8 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
     // Fonction pour liker un article
     const likeArticle = async (articleId: number) => {
         try {
-            const { data } = await likeArticleMutation({
-                variables: { articleId },
+            const {data} = await likeArticleMutation({
+                variables: {articleId},
             });
 
             if (!data?.likeArticle?.success) {
@@ -269,8 +269,8 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
     // Fonction pour unliker un article
     const unlikeArticle = async (articleId: number) => {
         try {
-            const { data } = await unlikeArticleMutation({
-                variables: { articleId },
+            const {data} = await unlikeArticleMutation({
+                variables: {articleId},
             });
 
             if (!data?.unlikeArticle?.success) {
@@ -283,7 +283,15 @@ export const ArticleProvider: React.FC<{ children: React.ReactNode }> = ({childr
 
     return (
         <ArticleContext.Provider
-            value={{ createArticle: create, updateArticle: update, deleteArticle: remove, getArticle, getArticles, likeArticle, unlikeArticle }}>
+            value={{
+                createArticle: create,
+                updateArticle: update,
+                deleteArticle: remove,
+                getArticle,
+                getArticles,
+                likeArticle,
+                unlikeArticle
+            }}>
             {children}
         </ArticleContext.Provider>
     );
