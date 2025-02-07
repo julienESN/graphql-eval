@@ -4,6 +4,7 @@ import {Button} from "@/components/ui/button";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {LucideEdit, LucideHeart, LucideTrash, MessageCircle} from "lucide-react";
 import {useArticle} from "@/context/ArticleContext";
+import {NavLink} from "react-router";
 
 // Typage strict des props basé sur les types générés
 interface ArticleProps {
@@ -98,10 +99,12 @@ const Article: React.FC<ArticleProps> = ({
         </Button>
         {user_id === author_id && (
           <div className="ml-auto flex gap-x-2">
-            <Button className="bg-blue-500 hover:bg-blue-950">
-              <LucideEdit className="" fill="none"/>
-              Modifier
-            </Button>
+            <NavLink to={`/updatearticle/${articleId}`}>
+              <Button className="bg-blue-500 hover:bg-blue-950">
+                <LucideEdit className="" fill="none" />
+                Modifier
+              </Button>
+            </NavLink>
             <Button onClick={handleDelete} className="bg-red-500 hover:bg-red-950">
               <LucideTrash className="" fill="none"/>
               Supprimer
