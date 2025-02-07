@@ -119,8 +119,9 @@ export default function UserPage(): JSX.Element {
     }
   );
 
-  const {loading, error} = useQuery<MeUserPageQuery, MeUserPageQueryVariables>(ME_QUERY, {
+  const {loading, error, refetch} = useQuery<MeUserPageQuery, MeUserPageQueryVariables>(ME_QUERY, {
     onCompleted: (data) => {
+      console.log(data)
       if (data?.me) {
         setUserData({
           id: parseInt(data.me.id),
@@ -138,7 +139,8 @@ export default function UserPage(): JSX.Element {
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * BANNER_IMAGES.length);
     setBannerImage(BANNER_IMAGES[randomIndex]);
-  }, []);
+    refetch();
+  }, [refetch]);
 
   const handleUpdateProfile = (): void => {
     updateUser({variables: {email: newMail, name: newUsername}});
@@ -165,10 +167,10 @@ export default function UserPage(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col min-h-full w-full pt-[1vh] pl-[4vw]">
+    <div className="flex flex-col min-h-full w-full ">
       <div className="relative w-screen">
         <div
-          className="w-full h-64 bg-cover bg-center rounded-lg shadow-lg"
+          className="w-full h-64 bg-cover bg-center shadow-lg"
           style={{
             backgroundImage: `url(${bannerImage})`,
           }}
