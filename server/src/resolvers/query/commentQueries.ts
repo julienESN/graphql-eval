@@ -1,4 +1,3 @@
-// src/resolvers/query/commentQueries.ts
 import { PrismaClient } from '@prisma/client';
 
 export const getComment = async (

@@ -7,7 +7,9 @@
     "dev": "nodemon --watch \"src/**/*.ts\" --exec ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "codegen": "graphql-codegen --config codegen.ts",
-    "db": "npx prisma migrate dev --name init"
+    "db": "npx prisma migrate dev --name init",
+    "seed": "ts-node prisma/seed.ts",
+    "init": "npm run db && npm run seed && npm run dev"
   },
   "keywords": [],
   "author": "",

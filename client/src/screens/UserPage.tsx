@@ -1,16 +1,7 @@
-/**
- * Page de profil utilisateur
- * @file UserPage.tsx
- *
- * Ce composant affiche le profil de l'utilisateur avec ses informations personnelles
- * et la liste de ses articles. Il permet également de modifier les informations du profil.
- */
-
 import {useState, useEffect} from "react";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
-
-import {useQuery, gql, useMutation} from "@apollo/client";
+import {useQuery, useMutation} from "@apollo/client";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +11,14 @@ import {
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {
+  MeUserPageQuery,
+  MeUserPageQueryVariables,
+  UpdateUserMutation,
+  UpdateUserMutationVariables,
+} from "../generated/graphql";
+import {gql} from "@apollo/client";
+import Article from "@/components/Article";
 
 const UPDATE_USER_MUTATION = gql`
   mutation UpdateUser($email: String, $name: String) {
@@ -36,38 +35,73 @@ const UPDATE_USER_MUTATION = gql`
   }
 `;
 
-// Interface pour les données utilisateur
-interface UserData {
+const ME_QUERY = gql`
+  query MeUserPage {
+    me {
+      id
+      email
+      name
+      articles {
+        id
+        title
+        content
+        author {
+          id
+          email
+          name
+        }
+        likes {
+          id
+          user {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+const BANNER_IMAGES: string[] = ["/psg1.webp"];
+
+interface ArticleType {
+  id: string;
+  author: AuthorType;
+  title: string;
+  content: string;
+  likes: LikeType[];
+}
+
+interface AuthorType {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface LikeType {
+  id: string;
+  user: {
+    id: number;
+    name: string;
+  };
+}
+
+interface User {
+  id: number;
   name: string;
   email: string;
   avatarUrl?: string;
 }
 
-// GraphQL query to fetch user data
-const ME_QUERY = gql`
-  query Me {
-    me {
-      id
-      email
-      name
-    }
-  }
-`;
-
-// Liste des images de bannière disponibles
-const BANNER_IMAGES = [
-  "/psg1.webp",
-  // Ajoutez ici toutes les images .webp disponibles
-];
-
-export default function UserPage() {
-  const [userData, setUserData] = useState<UserData | null>(null);
+export default function UserPage(): JSX.Element {
+  const [userData, setUserData] = useState<User | null>(null);
   const [bannerImage, setBannerImage] = useState<string>("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [newUsername, setNewUsername] = useState<string>("");
   const [newMail, setNewMail] = useState<string>("");
+  const [listArticles, setListArticles] = useState<ReadonlyArray<ArticleType>>([]);
 
-  const [updateUser] = useMutation<{ updateUser: { success: boolean } }>(
+  const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(
     UPDATE_USER_MUTATION,
     {
       onCompleted: (data) => {
@@ -85,13 +119,16 @@ export default function UserPage() {
     }
   );
 
-  const {loading, error} = useQuery(ME_QUERY, {
+  const {loading, error} = useQuery<MeUserPageQuery, MeUserPageQueryVariables>(ME_QUERY, {
     onCompleted: (data) => {
       if (data?.me) {
         setUserData({
-          name: data.me.name,
-          email: data.me.email,
+          id: parseInt(data.me.id),
+          name: data.me.name || "",
+          email: data.me.email || "",
         });
+
+        setListArticles(data.me.articles);
         setNewUsername(data.me.name || "");
         setNewMail(data.me.email || "");
       }
@@ -103,7 +140,7 @@ export default function UserPage() {
     setBannerImage(BANNER_IMAGES[randomIndex]);
   }, []);
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = (): void => {
     updateUser({variables: {email: newMail, name: newUsername}});
     setIsDialogOpen(false);
   };
@@ -128,26 +165,20 @@ export default function UserPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-full w-full pt-[1vh] pl-[4vw] ">
-      {/* En-tête du profil */}
+    <div className="flex flex-col min-h-full w-full pt-[1vh] pl-[4vw]">
       <div className="relative w-screen">
-        {/* Bannière */}
         <div
           className="w-full h-64 bg-cover bg-center rounded-lg shadow-lg"
           style={{
             backgroundImage: `url(${bannerImage})`,
           }}
         ></div>
-
-        {/* Informations utilisateur */}
         <div className="absolute bottom-0 left-0 right-0 transform translate-y-1/2 px-6 w-full">
           <div className="bg-background rounded-lg p-6 shadow-lg max-w-7xl mx-auto">
             <div className="flex items-center gap-4">
               <Avatar className="w-24 h-24 border-4 border-background">
                 <AvatarImage src={userData?.avatarUrl}/>
-                <AvatarFallback>
-                  {userData?.name?.charAt(0)}
-                </AvatarFallback>
+                <AvatarFallback>{userData?.name?.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <h1 className="text-2xl font-bold">{userData?.name}</h1>
@@ -193,17 +224,35 @@ export default function UserPage() {
         </div>
       </div>
 
-      {/* Liste des articles */}
       <div className="flex-1 mt-32 px-6 w-full">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-xl font-semibold mb-4">Articles</h2>
-          <div className="space-y-4 overflow-y-auto">
-            <div className="p-4 border rounded-lg">
-              <p className="text-muted-foreground">
-                Les cartes d'articles seront affichées ici
-              </p>
+
+          {!loading && !error && (
+            <div className="flex flex-col">
+              {listArticles.length === 0 ? (
+                <div className="space-y-4 overflow-y-auto">
+                  <div className="p-4 border rounded-lg">
+                    <p className="text-muted-foreground">Pas d'article posté</p>
+                  </div>
+                </div>
+              ) : (
+                listArticles.map((item) => (
+                  <Article
+                    key={item.id}
+                    articleId={item.id}
+                    author={item.author.name}
+                    author_id={parseInt(item.author.id)}
+                    user_id={userData?.id}
+                    title={item.title}
+                    content={item.content}
+                    like={item.likes.length}
+                    isLiked={item.likes.some((like) => like.user.id === userData?.id)}
+                  />
+                ))
+              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
