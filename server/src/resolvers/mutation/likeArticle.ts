@@ -12,7 +12,7 @@ export interface LikeResponse {
 }
 
 export const likeArticle = async (
-  _: unknown,
+  _: {},
   { articleId }: LikeArticleArgs,
   { prisma, user }: { prisma: PrismaClient; user: { id: number } | null }
 ): Promise<LikeResponse> => {

@@ -7,6 +7,7 @@ import Layout from "./screens/layout"
 import SignUpPage from "./screens/SignUpPage"
 import UserPage from "./screens/UserPage"
 import CreateArticlePage from "@/screens/CreateArticlePage.tsx";
+import UpdateArticlePage from "@/screens/UpdateArticlePage.tsx";
 import {BrowserRouter, Route, Routes} from "react-router";
 import {ApolloProvider} from "@apollo/client";
 import client from './apolloClient';
@@ -18,7 +19,7 @@ import {CommentProvider} from "@/context/CommentContext.tsx";
 import ArticlePage from "@/screens/ArticlePage.tsx";
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
+<StrictMode>
         <ApolloProvider client={client}>
             <AuthProvider>
                 <ArticleProvider>
@@ -41,6 +42,8 @@ createRoot(document.getElementById('root')!).render(
                                             <ArticlePage/>
                                         }
                                     />
+                                                              <Route path="/updatearticle/:id" element={<UpdateArticlePage/>}/>
+
                                 </Route>
                                 <Route
                                     path="/login"
