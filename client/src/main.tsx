@@ -13,46 +13,49 @@ import client from './apolloClient';
 import {AuthProvider} from "@/context/AuthContext.tsx";
 import ProtectedRoute from "@/components/ProtectedRoute.tsx";
 import GuestRoute from "@/components/GuestRoute.tsx";
-import {ArticleProvider} from "@/context/ArticleContext.tsx"; // Chemin vers votre Apollo Client
+import {ArticleProvider} from "@/context/ArticleContext.tsx";
+import {CommentProvider} from "@/context/CommentContext.tsx";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ApolloProvider client={client}>
       <AuthProvider>
         <ArticleProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route
-                        element={
-                            <ProtectedRoute>
-                                <Layout/>
-                            </ProtectedRoute>
-                        }
-                    >
-                        <Route path="/" element={<IndexScreen/>}/>
-                        <Route path="/user" element={<UserPage/>}/>
-                        <Route path="/createarticle" element={<CreateArticlePage/>}/>
+            <CommentProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route
+                            element={
+                                <ProtectedRoute>
+                                    <Layout/>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route path="/" element={<IndexScreen/>}/>
+                            <Route path="/user" element={<UserPage/>}/>
+                            <Route path="/createarticle" element={<CreateArticlePage/>}/>
 
-                    </Route>
-                    <Route
-                        path="/login"
-                        element={
-                            <GuestRoute>
-                                <LoginPage/>
-                            </GuestRoute>
-                        }
-                    />
-                    <Route
-                        path="/signup"
-                        element={
-                            <GuestRoute>
-                                <SignUpPage/>
-                            </GuestRoute>
-                        }
-                    />
+                        </Route>
+                        <Route
+                            path="/login"
+                            element={
+                                <GuestRoute>
+                                    <LoginPage/>
+                                </GuestRoute>
+                            }
+                        />
+                        <Route
+                            path="/signup"
+                            element={
+                                <GuestRoute>
+                                    <SignUpPage/>
+                                </GuestRoute>
+                            }
+                        />
 
-                </Routes>
-            </BrowserRouter>
+                    </Routes>
+                </BrowserRouter>
+            </CommentProvider>
         </ArticleProvider>
       </AuthProvider>
     </ApolloProvider>
