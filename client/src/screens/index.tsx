@@ -176,6 +176,8 @@ const IndexScreen: React.FC = (): ReactElement => {
                         author={item.author.name}
                         author_id={item.author.id}
                         user_id={userData?.me?.id ?? null}
+                        showCommentary={true}
+
                         title={item.title}
                         content={item.content}
                         like={item.likes.length}

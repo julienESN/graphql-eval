@@ -1,5 +1,5 @@
-import React, { createContext, useContext } from 'react';
-import { useMutation, useQuery, gql } from '@apollo/client';
+import React, {createContext, useContext} from 'react';
+import {useMutation, useQuery, gql} from '@apollo/client';
 import {
     CreateCommentMutation,
     CreateCommentMutationVariables,
@@ -112,10 +112,7 @@ const GET_COMMENTS_BY_ARTICLE_QUERY = gql`
             author {
                 id
                 email
-            }
-            article {
-                id
-                title
+                name
             }
         }
     }
@@ -133,43 +130,50 @@ interface CommentContextType {
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
 
-export const CommentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CommentProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [createComment] = useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CREATE_COMMENT_MUTATION);
     const [updateCommentMutation] = useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UPDATE_COMMENT_MUTATION);
     const [deleteCommentMutation] = useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DELETE_COMMENT_MUTATION);
-    const { refetch: refetchComment } = useQuery<GetCommentQuery, GetCommentQueryVariables>(GET_COMMENT_QUERY);
-    const { refetch: refetchComments } = useQuery<GetCommentsQuery>(GET_COMMENTS_QUERY);
-    const { refetch: refetchCommentsByArticle } = useQuery<GetCommentsByArticleQuery, GetCommentsByArticleQueryVariables>(GET_COMMENTS_BY_ARTICLE_QUERY);
+    const {refetch: refetchComment} = useQuery<GetCommentQuery, GetCommentQueryVariables>(GET_COMMENT_QUERY);
+    const {refetch: refetchComments} = useQuery<GetCommentsQuery>(GET_COMMENTS_QUERY);
+    const {refetch: refetchCommentsByArticle} = useQuery<GetCommentsByArticleQuery, GetCommentsByArticleQueryVariables>(GET_COMMENTS_BY_ARTICLE_QUERY);
 
     const create = async (articleId: number, content: string) => {
-        await createComment({ variables: { articleId, content } });
+        await createComment({variables: {articleId, content}});
     };
 
     const update = async (id: number, content: string) => {
-        await updateCommentMutation({ variables: { id, content } });
+        await updateCommentMutation({variables: {id, content}});
     };
 
     const remove = async (id: number) => {
-        await deleteCommentMutation({ variables: { id } });
+        await deleteCommentMutation({variables: {id}});
     };
 
     const getComment = async (id: number) => {
-        const { data } = await refetchComment({ id });
+        const {data} = await refetchComment({id});
         return data?.comment || null;
     };
 
     const getComments = async () => {
-        const { data } = await refetchComments();
+        const {data} = await refetchComments();
         return data?.comments || null;
     };
 
     const getCommentsByArticle = async (articleId: number) => {
-        const { data } = await refetchCommentsByArticle({ articleId });
+        const {data} = await refetchCommentsByArticle({articleId});
         return data?.commentsByArticle || null;
     };
 
     return (
-        <CommentContext.Provider value={{ createComment: create, updateComment: update, deleteComment: remove, getComment, getComments, getCommentsByArticle }}>
+        <CommentContext.Provider value={{
+            createComment: create,
+            updateComment: update,
+            deleteComment: remove,
+            getComment,
+            getComments,
+            getCommentsByArticle
+        }}>
             {children}
         </CommentContext.Provider>
     );
