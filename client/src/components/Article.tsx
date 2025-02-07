@@ -83,7 +83,7 @@ const Article: React.FC<ArticleProps> = ({
             <AvatarFallback>{author.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle>@ {author} {user_id} == {author_id}</CardTitle>
+            <CardTitle>@ {author}</CardTitle>
           </div>
         </div>
         <div className="flex flex-1 justify-center cursor-pointer">
